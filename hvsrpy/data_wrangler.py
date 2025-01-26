@@ -49,14 +49,14 @@ def _arrange_traces(traces):
         elif trace.meta.channel.endswith("Z") and not found_vt:
             vt = TimeSeries.from_trace(trace)
             found_vt = True
-        else: # pragma: no cover
+        else:  # pragma: no cover
             msg = "Missing, duplicate, or incorrectly named components."
             raise ValueError(msg)
     return ns, ew, vt
 
 
 def _check_npts(npts_header, npts_found):
-    if npts_header != npts_found: # pragma: no cover
+    if npts_header != npts_found:  # pragma: no cover
         msg = f"Points listed in file header ({npts_header}) does not match "
         msg += f"the number of points found ({npts_found}) please report this "
         msg += "issue to the hvsrpy developers via GitHub issues "
@@ -116,7 +116,7 @@ def _read_mseed(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         trace_list = []
         for fname in fnames:
             stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
-            if len(stream) != 1: # pragma: no cover
+            if len(stream) != 1:  # pragma: no cover
                 msg = f"File {fname} contained {len(stream)}"
                 msg += "traces, rather than 1 as was expected."
                 raise IndexError(msg)
@@ -124,12 +124,12 @@ def _read_mseed(fnames, obspy_read_kwargs=None, degrees_from_north=None):
             trace_list.append(trace)
         traces = obspy.Stream(trace_list)
         fnames = [str(fname) for fname in fnames]
-    else: # pragma: no cover
+    else:  # pragma: no cover
         msg = "`fnames` must be either `str` or `list`"
         msg += f"cannot be {type(fnames)}."
         raise ValueError(msg)
 
-    if len(traces) != 3: # pragma: no cover
+    if len(traces) != 3:  # pragma: no cover
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
@@ -194,7 +194,7 @@ def _read_saf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
     if degrees_from_north is None:
         try:
             north_rot = float(saf_north_rot_exec.search(text).groups()[0])
-        except: # pragma: no cover
+        except:  # pragma: no cover
             msg = f"The provided saf file {fname} does not include the "
             msg += "NORTH_ROT keyword, assuming equal to zero."
             warnings.warn(msg, UserWarning)
@@ -204,9 +204,10 @@ def _read_saf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
                 degrees_from_north = north_rot
             elif e_ch == 1:
                 degrees_from_north = north_rot + 90.
-            else: # pragma: no cover
-                msg = f"The provided saf file {fname} is not properly formatted."
-                msg += " CH1 must be vertical; CH2 & CH3 the horizontals."
+            else:  # pragma: no cover
+                msg = f"The provided saf file {fname} is not properly "
+                msg += "formatted. CH1 must be vertical; CH2 & CH3 the "
+                msg += "horizontals."
                 raise ValueError(msg)
 
     data = np.empty((npts_header, 3), dtype=np.float32)
@@ -237,7 +238,7 @@ def _read_minishark(fnames, obspy_read_kwargs=None, degrees_from_north=None):
 
     .. warning::
         Private API is subject to change without warning.
-    
+
     Parameters
     ----------
     fnames : str
@@ -346,14 +347,14 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
     for fname in fnames:
         for byteorder in ["little", "big"]:
             if isinstance(fname, io.BytesIO):
-                fname.seek(0,0)
+                fname.seek(0, 0)
             obspy_read_kwargs["byteorder"] = byteorder
             try:
                 stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
             except Exception as e:
-                msg = f"Tried reading as sac {byteorder} endian, "
-                msg += f"got exception |  {e}"
-                logger.info(msg)
+                # msg = f"Tried reading as sac {byteorder} endian, "
+                # msg += f"got exception |  {e}"
+                # logger.info(msg)
                 pass
             else:
                 break
@@ -364,7 +365,7 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         trace_list.append(trace)
     traces = obspy.Stream(trace_list)
 
-    if len(traces) != 3: # pragma: no cover
+    if len(traces) != 3:  # pragma: no cover
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
@@ -419,7 +420,7 @@ def _read_gcf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
     if isinstance(fname, (str, pathlib.Path, io.BytesIO)):
         traces = _quiet_obspy_read(fname, **obspy_read_kwargs)
 
-    if len(traces) != 3: # pragma: no cover
+    if len(traces) != 3:  # pragma: no cover
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
@@ -520,6 +521,7 @@ def _read_peer(fnames, obspy_read_kwargs=None, degrees_from_north=None):
                 msg = f"Components {component_keys} in header are not recognized. "
                 msg += "If you believe this is an error please contact the developer."
                 raise ValueError(msg)
+
     vt = component_list[vt_id]
     del component_list[vt_id], component_keys[vt_id]
 
@@ -549,14 +551,15 @@ def _read_peer(fnames, obspy_read_kwargs=None, degrees_from_north=None):
     # set rotation iff degrees_from_north is not already set.
     if degrees_from_north is None:
         degrees_from_north = component_keys_abs[ns_id]
-        degrees_from_north = float(degrees_from_north - 360*(degrees_from_north // 360))
+        degrees_from_north = float(
+            degrees_from_north - 360*(degrees_from_north // 360))
 
     # peer does not require all components to be the same length.
     # therefore trim all records to the shortest time length.
-    npts = [component.n_samples for component in [ns, ew,vt]]
-    ns.amplitude = ns.amplitude[:min(npts)] 
-    ew.amplitude = ew.amplitude[:min(npts)] 
-    vt.amplitude = vt.amplitude[:min(npts)] 
+    npts = [component.n_samples for component in [ns, ew, vt]]
+    ns.amplitude = ns.amplitude[:min(npts)]
+    ew.amplitude = ew.amplitude[:min(npts)]
+    vt.amplitude = vt.amplitude[:min(npts)]
 
     meta = {"file name(s)": [str(fname) for fname in fnames]}
     return SeismicRecording3C(ns, ew, vt,
@@ -573,7 +576,7 @@ READ_FUNCTION_DICT = {
 }
 
 
-def read_single(fnames, obspy_read_kwargs=None, degrees_from_north=None):
+def read_single(fnames, obspy_read_kwargs=None, degrees_from_north=None, verbose=False):
     """Read file(s) associated with a single recording.
 
     Parameters
@@ -599,6 +602,10 @@ def read_single(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         orientation is not listed in the file) the sensor's north
         component is aligned with magnetic north
         (i.e., ``degrees_from_north=0``).
+    verbose : bool, optional
+        If ``True`` information is provided about the attempts to read
+        the file and the associated error(s). Can we useful for
+        debugging a file that cannot be read. Default is ``False``.
 
     Returns
     -------
@@ -606,30 +613,35 @@ def read_single(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         Initialized three-component seismic recording object.
 
     """
-    logger.info(f"Attempting to read {fnames}")
+    errors = []
+    if verbose:
+        errors.append("----------------")
+        errors.append(f"Reading {fnames}")
     for ftype, read_function in READ_FUNCTION_DICT.items():
         try:
             srecording_3c = read_function(fnames,
                                           obspy_read_kwargs=obspy_read_kwargs,
-                                          degrees_from_north=degrees_from_north)
+                                          degrees_from_north=degrees_from_north
+                                          )
         except Exception as e:
-            logger.info(f"Tried reading as {ftype}, got exception |  {e}")
-
-            if ftype == "peer":
-                raise e
-
-            pass
+            errors.append(f"  Failed reading as {ftype}.")
+            errors.append(f"    A {type(e)} was raised with note:")
+            errors.append(f"    '{e.args[0]}'")
         else:
-            logger.info(f"File type identified as {ftype}.")
             break
-    else: # pragma: no cover
+    else:  # pragma: no cover
+        if verbose:
+            errors = "\n".join(errors)
+            print(errors)
         msg = "File format not recognized. Only the following are supported: "
-        msg += f"{READ_FUNCTION_DICT.keys()}."
+        msg += f"{list(READ_FUNCTION_DICT.keys())}. "
+        msg += "If you believe you are using one of these formats set "
+        msg += "verbose=True to assist in the debugging process."    
         raise ValueError(msg)
     return srecording_3c
 
 
-def read(fnames, obspy_read_kwargs=None, degrees_from_north=None):
+def read(fnames, obspy_read_kwargs=None, degrees_from_north=None, verbose=False):
     """Read seismic data file(s).
 
     Parameters
@@ -663,6 +675,10 @@ def read(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         or (if the sensor's orientation is not listed in the file) the
         sensor's north component is aligned with magnetic north
         (i.e., ``degrees_from_north=0``).
+    verbose : bool, optional
+        If ``True`` information is provided about the attempts to read
+        the file and the associated error(s). Can we useful for
+        debugging a file that cannot be read. Default is ``False``.
 
     Returns
     -------
@@ -700,6 +716,7 @@ def read(fnames, obspy_read_kwargs=None, degrees_from_north=None):
 
         seismic_recordings.append(read_single(fname,
                                               obspy_read_kwargs=read_kwargs,
-                                              degrees_from_north=degrees_from_north))
+                                              degrees_from_north=degrees_from_north,
+                                              verbose=verbose))
 
     return seismic_recordings

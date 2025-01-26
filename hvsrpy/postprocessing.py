@@ -71,7 +71,7 @@ DEFAULT_KWARGS = {
     },
     "nth_std_frequency_range_normal": {
         "color": "#ff8080",
-        "label": "r$\mu_{fn} \pm \sigma_{fn}$",
+        "label": r"$\mu_{fn} \pm \sigma_{fn}$",
     },
     "nth_std_frequency_range_lognormal": {
         "color": "#ff8080",
