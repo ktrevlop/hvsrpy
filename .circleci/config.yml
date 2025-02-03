@@ -22,6 +22,9 @@ workflows:
       - test-312:
           context:
             - docker
+      - test-313:
+          context:
+            - docker
 
 jobs:
   test-38: &test-template
@@ -82,6 +85,14 @@ jobs:
     <<: *test-template
     docker:
       - image: cimg/python:3.12.4
+        auth:
+          username: jpvantassel
+          password: $DOCKER_PASS
+
+  test-313:
+    <<: *test-template
+    docker:
+      - image: cimg/python:3.13.1
         auth:
           username: jpvantassel
           password: $DOCKER_PASS
