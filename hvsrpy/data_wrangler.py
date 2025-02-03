@@ -36,16 +36,16 @@ from .seismic_recording_3c import SeismicRecording3C
 logger = logging.getLogger(__name__)
 
 
-def _arrange_traces(traces):
+def _arrange_nez_traces(traces):
     """Sort ``list`` of 3 ``Trace`` objects according to direction."""
     found_ew, found_ns, found_vt = False, False, False
     for trace in traces:
-        if trace.meta.channel.endswith("E") and not found_ew:
-            ew = TimeSeries.from_trace(trace)
-            found_ew = True
-        elif trace.meta.channel.endswith("N") and not found_ns:
+        if trace.meta.channel.endswith("N") and not found_ns:
             ns = TimeSeries.from_trace(trace)
             found_ns = True
+        elif trace.meta.channel.endswith("E") and not found_ew:
+            ew = TimeSeries.from_trace(trace)
+            found_ew = True
         elif trace.meta.channel.endswith("Z") and not found_vt:
             vt = TimeSeries.from_trace(trace)
             found_vt = True
@@ -54,6 +54,43 @@ def _arrange_traces(traces):
             raise ValueError(msg)
     return ns, ew, vt
 
+def _arrange_12z_traces(traces):
+    """Sort ``list`` of 3 ``Trace`` objects according to direction."""
+    # 1 is assumed 
+    found_t1, found_t2, found_vt = False, False, False
+    for trace in traces:
+        if trace.meta.channel.endswith("1") and not found_t1:
+            ew = TimeSeries.from_trace(trace)
+            found_t1 = True
+        elif trace.meta.channel.endswith("2") and not found_t2:
+            ns = TimeSeries.from_trace(trace)
+            found_t2 = True
+        elif trace.meta.channel.endswith("Z") and not found_vt:
+            vt = TimeSeries.from_trace(trace)
+            found_vt = True
+        else:  # pragma: no cover
+            msg = "Missing, duplicate, or incorrectly named components."
+            raise ValueError(msg)
+    return ns, ew, vt
+
+def _orient_traces(traces, degrees_from_north):
+    # assume NEZ format
+    try:
+        ns, ew, vt = _arrange_nez_traces(traces)
+        degrees_from_north = 0 if degrees_from_north is None else float(degrees_from_north)
+    # thrown if not in NEZ format
+    except ValueError:
+        # can fix if orientation but only if sensor azimuth is known
+        # component '1' is assumed to go to 'N'.
+        if degrees_from_north is None:
+            msg = "Missing, duplicate, or incorrectly named components."
+            msg += "If your components end in '1', '2', 'Z' instead of "
+            msg += "'N', 'E', 'Z', you may be able to resolve this error by "
+            msg += "specifying 'degree_from_north'."
+            raise ValueError(msg)
+        ns, ew, vt = _arrange_12z_traces(traces)
+        degrees_from_north = float(degrees_from_north)
+    return ns, ew, vt, degrees_from_north
 
 def _check_npts(npts_header, npts_found):
     if npts_header != npts_found:  # pragma: no cover
@@ -133,10 +170,7 @@ def _read_mseed(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
-    ns, ew, vt = _arrange_traces(traces)
-
-    if degrees_from_north is None:
-        degrees_from_north = 0.
+    ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
 
     meta = {"file name(s)": fnames}
     return SeismicRecording3C(ns, ew, vt,
@@ -369,10 +403,7 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
-    ns, ew, vt = _arrange_traces(traces)
-
-    if degrees_from_north is None:
-        degrees_from_north = 0.
+    ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
 
     meta = {"file name(s)": [str(fname) for fname in fnames]}
     return SeismicRecording3C(ns, ew, vt,
@@ -424,10 +455,7 @@ def _read_gcf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         msg = f"Provided {len(traces)} traces, but must only provide 3."
         raise ValueError(msg)
 
-    ns, ew, vt = _arrange_traces(traces)
-
-    if degrees_from_north is None:
-        degrees_from_north = 0.
+    ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
 
     meta = {"file name(s)": str(fname)}
     return SeismicRecording3C(ns, ew, vt,
