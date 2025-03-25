@@ -73,7 +73,7 @@ setup(
     python_requires='>=3.8',
     install_requires=['numpy>=1.22', 'scipy', 'obspy',
                       'pandas', 'shapely', 'termcolor', 'matplotlib',
-                      'click>8.0.0', 'numba', 'PyQt5'],
+                      'click>8.0.0', 'numba', 'PyQt5', 'scikit-learn'],
     extras_require={
         'dev': ['tox', 'jupyterlab', 'coverage', 'sphinx', 'sphinx_rtd_theme', 'sphinx-click', 'autopep8'],
     },
