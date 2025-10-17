@@ -29,10 +29,10 @@ with contributions from Dana M. Brannon under the supervision of Professor
 Brady R. Cox at The University of Texas at Austin. _hvsrpy_ continues to be
 developed and maintained by [Joseph P. Vantassel and his research group at Virginia Tech](https://geoimaging-research.org/).
 
+## Citation
+
 If you use `hvsrpy` in your research or consulting, we ask you please cite the
 following:
-
-If you use _hvsrpy_ in your research or consulting, we ask you please cite the following:
 
 > Vantassel, J.P. (2025). "_hvsrpy_: An Open‐Source Python Package for Microtremor and Earthquake Horizontal‐to‐Vertical Spectral Ratio Processing". Seismological Research Letters. 96 (4): 2671–2682, [https://doi.org/10.1785/0220240395](https://doi.org/10.1785/0220240395)
 
@@ -42,8 +42,10 @@ If you use _hvsrpy_ in your research or consulting, we ask you please cite the f
 _If you are using an older version of hvsrpy, please use please use the citation tool on the hvsrpy
 [archive](http://doi.org/10.5281/zenodo.3666956) to generate the appropriate version-specific citation._
 
-`hvsrpy` implements the work of many others. Therefore we strongly encourage
-users to cite the original work alongside `hvsrpy`. Below we list key features
+## References to Implemented Work
+
+`hvsrpy` implements the work of many others. We strongly encourage
+users to cite original work alongside `hvsrpy`. Below we list key features
 and their associated citation.
 
 Lognormal statistics and fully-automated frequency-domain window-rejection algorithm.
@@ -105,7 +107,7 @@ display of our gratitude, we thank them individually
 open-source software, including:
 
 -   Support of a broad range of microtremor and earthquake data formats
-including: miniSEED, SAF, MiniShark, SAC, GCF, and PEER.
+including: MiniSEED, SAF, MiniShark, SAC, GCF, and PEER.
 -   Multiple methods to combine the horizontal components including: arithmetic_mean, squared-average, quadratic-mean, geometric-mean, total-horizontal-energy, vector-summation, maximum-horizontal-value,
 rotD50, or single-azimuth.
 -   Ability to use a lognormal distribution for the site resonant
@@ -197,7 +199,7 @@ last few lines of the text displayed in the console.
 3.  Continue to explore the other example notebooks provided. Note that each
   example notebook seeks to highlight one or two key features of `hvsrpy` and
   it may be helpful to combine multiple components together to build
-  a custom workflow, this is highly encouraged.
+  a custom workflow.
 
 4.  Enjoy!
 
