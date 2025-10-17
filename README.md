@@ -32,13 +32,15 @@ developed and maintained by [Joseph P. Vantassel and his research group at Virgi
 If you use `hvsrpy` in your research or consulting, we ask you please cite the
 following:
 
-> Joseph Vantassel. (2020). jpvantassel/hvsrpy: latest (Concept). Zenodo.
-> [http://doi.org/10.5281/zenodo.3666956](http://doi.org/10.5281/zenodo.3666956)
+If you use _hvsrpy_ in your research or consulting, we ask you please cite the following:
 
-_Note: For software, version specific citations should be preferred to
-general concept citations, such as that listed above. To generate a version
-specific citation for `hvsrpy`, please use the citation tool on the `hvsrpy`
-[archive](http://doi.org/10.5281/zenodo.3666956)._
+> Vantassel, J.P. (2025). "_hvsrpy_: An Open‐Source Python Package for Microtremor and Earthquake Horizontal‐to‐Vertical Spectral Ratio Processing". Seismological Research Letters. 96 (4): 2671–2682, [https://doi.org/10.1785/0220240395](https://doi.org/10.1785/0220240395)
+
+> Vantassel, J.P. (2025). jpvantassel/hvsrpy: v2.1.0. Zenodo.
+[http://doi.org/10.5281/zenodo.3666956](http://doi.org/10.5281/zenodo.3666956)
+
+_If you are using an older version of hvsrpy, please use please use the citation tool on the hvsrpy
+[archive](http://doi.org/10.5281/zenodo.3666956) to generate the appropriate version-specific citation._
 
 `hvsrpy` implements the work of many others. Therefore we strongly encourage
 users to cite the original work alongside `hvsrpy`. Below we list key features
