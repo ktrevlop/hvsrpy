@@ -88,6 +88,18 @@ def _orient_traces(traces, degrees_from_north):
 
     return ns, ew, vt, degrees_from_north
 
+def _trim_traces(traces):
+    # find common start and end times
+    start_time = min([trace.stats.starttime for trace in traces])
+    end_time = max([trace.stats.endtime for trace in traces])
+
+    duration = end_time - start_time
+    if duration < 0.1:
+        raise ValueError("Ambient noise time series do not overlap.")
+    traces = [trace.trim(starttime=start_time, endtime=end_time) for trace in traces]
+
+    return traces
+
 def _check_npts(npts_header, npts_found):
     if npts_header != npts_found:  # pragma: no cover
         msg = f"Points listed in file header ({npts_header}) does not match "
@@ -167,6 +179,8 @@ def _read_mseed(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         raise ValueError(msg)
 
     ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
+
+    ns, ew, vt = _trim_traces((ns, ew, vt))
 
     meta = {"file name(s)": fnames}
     return SeismicRecording3C(ns, ew, vt,
@@ -401,6 +415,8 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
 
     ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
 
+    ns, ew, vt = _trim_traces((ns, ew, vt))
+
     meta = {"file name(s)": [str(fname) for fname in fnames]}
     return SeismicRecording3C(ns, ew, vt,
                               degrees_from_north=degrees_from_north, meta=meta)
@@ -452,6 +468,8 @@ def _read_gcf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         raise ValueError(msg)
 
     ns, ew, vt, degrees_from_north = _orient_traces(traces, degrees_from_north)
+
+    ns, ew, vt = _trim_traces((ns, ew, vt))
 
     meta = {"file name(s)": str(fname)}
     return SeismicRecording3C(ns, ew, vt,
