@@ -1,6 +1,6 @@
 # This file is part of hvsrpy, a Python package for horizontal-to-vertical
 # spectral ratio processing.
-# Copyright (C) 2019-2023 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
+# Copyright (C) 2019-2025 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -36,36 +36,17 @@ from .seismic_recording_3c import SeismicRecording3C
 logger = logging.getLogger(__name__)
 
 
-def _arrange_nez_traces(traces):
+def _arrange_traces(traces, components="NEZ"):
     """Sort ``list`` of 3 ``Trace`` objects according to direction."""
     found_ew, found_ns, found_vt = False, False, False
     for trace in traces:
-        if trace.meta.channel.endswith("N") and not found_ns:
+        if trace.meta.channel.endswith(components[0]) and not found_ns:
             ns = TimeSeries.from_trace(trace)
             found_ns = True
-        elif trace.meta.channel.endswith("E") and not found_ew:
+        elif trace.meta.channel.endswith(components[1]) and not found_ew:
             ew = TimeSeries.from_trace(trace)
             found_ew = True
-        elif trace.meta.channel.endswith("Z") and not found_vt:
-            vt = TimeSeries.from_trace(trace)
-            found_vt = True
-        else:  # pragma: no cover
-            msg = "Missing, duplicate, or incorrectly named components."
-            raise ValueError(msg)
-    return ns, ew, vt
-
-def _arrange_12z_traces(traces):
-    """Sort ``list`` of 3 ``Trace`` objects according to direction."""
-    # 1 is assumed 
-    found_t1, found_t2, found_vt = False, False, False
-    for trace in traces:
-        if trace.meta.channel.endswith("1") and not found_t1:
-            ew = TimeSeries.from_trace(trace)
-            found_t1 = True
-        elif trace.meta.channel.endswith("2") and not found_t2:
-            ns = TimeSeries.from_trace(trace)
-            found_t2 = True
-        elif trace.meta.channel.endswith("Z") and not found_vt:
+        elif trace.meta.channel.endswith(components[2]) and not found_vt:
             vt = TimeSeries.from_trace(trace)
             found_vt = True
         else:  # pragma: no cover
@@ -76,20 +57,35 @@ def _arrange_12z_traces(traces):
 def _orient_traces(traces, degrees_from_north):
     # assume NEZ format
     try:
-        ns, ew, vt = _arrange_nez_traces(traces)
+        ns, ew, vt = _arrange_traces(traces, components="NEZ")
         degrees_from_north = 0 if degrees_from_north is None else float(degrees_from_north)
-    # thrown if not in NEZ format
+
+    # not NEZ; try XYZ next
     except ValueError:
-        # can fix if orientation but only if sensor azimuth is known
-        # component '1' is assumed to go to 'N'.
-        if degrees_from_north is None:
-            msg = "Missing, duplicate, or incorrectly named components."
-            msg += "If your components end in '1', '2', 'Z' instead of "
-            msg += "'N', 'E', 'Z', you may be able to resolve this error by "
-            msg += "specifying 'degree_from_north'."
-            raise ValueError(msg)
-        ns, ew, vt = _arrange_12z_traces(traces)
-        degrees_from_north = float(degrees_from_north)
+        try:
+            ns, ew, vt = _arrange_traces(traces, components="XYZ")
+            degrees_from_north = 0 if degrees_from_north is None else float(degrees_from_north)
+
+        # not NEZ or XYZ; try 123 next
+        except ValueError:
+            # the 123 orientation indicates the sensor does not point north
+            # can fix iff sensor azimuth is known
+            if degrees_from_north is None:
+                msg = "Missing, duplicate, or incorrectly named components."
+                msg += "If your components end in '1', '2', '3' or '1', '2', 'Z' instead of "
+                msg += "'N', 'E', 'Z', you may be able to resolve this error by "
+                msg += "specifying 'degrees_from_north'."
+                raise ValueError(msg)
+
+            try:
+                ns, ew, vt = _arrange_traces(traces, components="123")
+                degrees_from_north = float(degrees_from_north)
+
+            # not NEZ, XYZ, 123; try 12Z next
+            except ValueError:
+                ns, ew, vt = _arrange_traces(traces, components="12Z")
+                degrees_from_north = float(degrees_from_north)
+
     return ns, ew, vt, degrees_from_north
 
 def _check_npts(npts_header, npts_found):
