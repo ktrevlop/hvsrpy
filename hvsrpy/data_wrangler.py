@@ -41,13 +41,13 @@ def _arrange_traces(traces, components="NEZ"):
     found_ew, found_ns, found_vt = False, False, False
     for trace in traces:
         if trace.meta.channel.endswith(components[0]) and not found_ns:
-            ns = TimeSeries.from_trace(trace)
+            ns = trace
             found_ns = True
         elif trace.meta.channel.endswith(components[1]) and not found_ew:
-            ew = TimeSeries.from_trace(trace)
+            ew = trace
             found_ew = True
         elif trace.meta.channel.endswith(components[2]) and not found_vt:
-            vt = TimeSeries.from_trace(trace)
+            vt = trace
             found_vt = True
         else:  # pragma: no cover
             msg = "Missing, duplicate, or incorrectly named components."
@@ -90,13 +90,17 @@ def _orient_traces(traces, degrees_from_north):
 
 def _trim_traces(traces):
     # find common start and end times
-    start_time = min([trace.stats.starttime for trace in traces])
-    end_time = max([trace.stats.endtime for trace in traces])
+    start_time = max([trace.stats.starttime for trace in traces])
+    end_time = min([trace.stats.endtime for trace in traces])
 
     duration = end_time - start_time
     if duration < 0.1:
         raise ValueError("Ambient noise time series do not overlap.")
-    traces = [trace.trim(starttime=start_time, endtime=end_time) for trace in traces]
+
+    for trace in traces:            
+        trace.trim(starttime=start_time, endtime=end_time)
+
+    traces = [TimeSeries.from_trace(trace) for trace in traces]
 
     return traces
 
