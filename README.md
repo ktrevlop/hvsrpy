@@ -6,7 +6,7 @@
 [![PyPI - License](https://img.shields.io/pypi/l/hvsrpy)](https://github.com/jpvantassel/hvsrpy/blob/main/LICENSE.txt)
 [![CircleCI](https://circleci.com/gh/jpvantassel/hvsrpy.svg?style=svg)](https://circleci.com/gh/jpvantassel/hvsrpy)
 [![Documentation Status](https://readthedocs.org/projects/hvsrpy/badge/?version=latest)](https://hvsrpy.readthedocs.io/en/latest/?badge=latest)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/528737ade629492e8652be369528c756)](https://www.codacy.com/gh/jpvantassel/hvsrpy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jpvantassel/hvsrpy&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/528737ade629492e8652be369528c756)](https://app.codacy.com/gh/jpvantassel/hvsrpy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![codecov](https://codecov.io/gh/jpvantassel/hvsrpy/branch/main/graph/badge.svg?token=MJ3WDNRIM0)](https://codecov.io/gh/jpvantassel/hvsrpy)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hvsrpy)
 

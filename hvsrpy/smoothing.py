@@ -1,6 +1,6 @@
 # This file is part of hvsrpy, a Python package for horizontal-to-vertical
 # spectral ratio processing.
-# Copyright (C) 2019-2023 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
+# Copyright (C) 2019-2025 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ from numba import njit
 
 
 @njit(cache=True)
-def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.): # pragma: no cover
+def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.):  # pragma: no cover
     """Fast Konno and Ohmachi (1998) smoothing.
 
     Parameters
@@ -53,13 +53,10 @@ def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.): # pragma: no c
        228-241.
 
     """
-    n = 3
-    upper_limit = np.power(10, +n/bandwidth)
-    lower_limit = np.power(10, -n/bandwidth)
+    upper_limit = np.power(10, +3/bandwidth)
+    lower_limit = np.power(10, -3/bandwidth)
 
-    nrows = spectrum.shape[0]
-    ncols = fcs.size
-    smoothed_spectrum = np.empty((nrows, ncols))
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -67,7 +64,7 @@ def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.): # pragma: no c
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nrows)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):
@@ -75,7 +72,8 @@ def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.): # pragma: no c
 
             if (f < 1E-6) or (f_on_fc > upper_limit) or (f_on_fc < lower_limit):
                 continue
-            elif np.abs(f - fc) < 1E-6:
+
+            if np.abs(f - fc) < 1E-6:
                 window = 1.
             else:
                 window = bandwidth * np.log10(f_on_fc)
@@ -95,7 +93,7 @@ def konno_and_ohmachi(frequencies, spectrum, fcs, bandwidth=40.): # pragma: no c
 
 
 @njit(cache=True)
-def parzen(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
+def parzen(frequencies, spectrum, fcs, bandwidth=0.5):  # pragma: no cover
     """Fast Pazen-style smoothing.
 
     Parameters
@@ -129,9 +127,7 @@ def parzen(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
     upper_limit = np.sqrt(6) * a/bandwidth
     lower_limit = -1 * upper_limit
 
-    nrows = spectrum.shape[0]
-    ncols = fcs.size
-    smoothed_spectrum = np.empty((nrows, ncols))
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -139,7 +135,7 @@ def parzen(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nrows)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):
@@ -147,7 +143,8 @@ def parzen(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
 
             if (f < 1E-6) or (f_minus_fc > upper_limit) or (f_minus_fc < lower_limit):
                 continue
-            elif np.abs(f - fc) < 1E-6:
+
+            if np.abs(f - fc) < 1E-6:
                 window = 1.
             else:
                 window = a*f_minus_fc / bandwidth
@@ -166,7 +163,7 @@ def parzen(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
     return smoothed_spectrum
 
 
-def savitzky_and_golay(frequencies, spectrum, fcs, bandwidth=9): # pragma: no cover
+def savitzky_and_golay(frequencies, spectrum, fcs, bandwidth=9):  # pragma: no cover
     """Fast Savitzky and Golay (1964) smoothing.
 
     Parameters
@@ -197,7 +194,8 @@ def savitzky_and_golay(frequencies, spectrum, fcs, bandwidth=9): # pragma: no co
     """
     m = int(bandwidth)
     if m % 2 != 1:
-        raise ValueError("bandwidth for savitzky_and_golay must be an odd integer.")
+        raise ValueError(
+            "bandwidth for savitzky_and_golay must be an odd integer.")
 
     nterms = ((m - 1) // 2) + 1
     coefficients = np.empty((nterms))
@@ -218,11 +216,10 @@ def savitzky_and_golay(frequencies, spectrum, fcs, bandwidth=9): # pragma: no co
 
 
 @njit(cache=True)
-def _savitzky_and_golay(spectrum, nfcs, coefficients, normalization_coefficient): # pragma: no cover
+def _savitzky_and_golay(spectrum, nfcs, coefficients, normalization_coefficient):  # pragma: no cover
 
     nrows, nfreqs = spectrum.shape
-    ncols = nfcs.size
-    smoothed_spectrum = np.empty((nrows, ncols))
+    smoothed_spectrum = np.empty((nrows, nfcs.size))
 
     ncoeff = coefficients.size
 
@@ -243,10 +240,8 @@ def _savitzky_and_golay(spectrum, nfcs, coefficients, normalization_coefficient)
 
 
 @njit(cache=True)
-def linear_rectangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
-    nspectra, _ = spectrum.shape
-    nfcs = fcs.size
-    smoothed_spectrum = np.empty((nspectra, nfcs))
+def linear_rectangular(frequencies, spectrum, fcs, bandwidth=0.5):  # pragma: no cover
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -254,7 +249,7 @@ def linear_rectangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no 
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nspectra)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):
@@ -277,13 +272,11 @@ def linear_rectangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no 
 
 
 @njit(cache=True)
-def log_rectangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no cover
+def log_rectangular(frequencies, spectrum, fcs, bandwidth=0.05):  # pragma: no cover
     lower_limit = np.power(10, -bandwidth/2)
     upper_limit = np.power(10, +bandwidth/2)
 
-    nspectra, _ = spectrum.shape
-    nfcs = fcs.size
-    smoothed_spectrum = np.empty((nspectra, nfcs))
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -291,7 +284,7 @@ def log_rectangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no co
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nspectra)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):
@@ -299,8 +292,7 @@ def log_rectangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no co
 
             if (f < 1E-6) or (f_on_fc < lower_limit) or (f_on_fc > upper_limit):
                 continue
-            else:
-                window = 1.
+            window = 1.
 
             sumproduct += window*spectrum[:, f_index]
             sumwindow += window
@@ -314,10 +306,8 @@ def log_rectangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no co
 
 
 @njit(cache=True)
-def linear_triangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no cover
-    nspectra, _ = spectrum.shape
-    nfcs = fcs.size
-    smoothed_spectrum = np.empty((nspectra, nfcs))
+def linear_triangular(frequencies, spectrum, fcs, bandwidth=0.5):  # pragma: no cover
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -325,7 +315,7 @@ def linear_triangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no c
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nspectra)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):
@@ -333,8 +323,7 @@ def linear_triangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no c
 
             if (f < 1E-6) or (np.abs(f_minus_fc) > bandwidth/2):
                 continue
-            else:
-                window = 1. - np.abs(f_minus_fc)*(2/bandwidth)
+            window = 1. - np.abs(f_minus_fc)*(2/bandwidth)
 
             sumproduct += window*spectrum[:, f_index]
             sumwindow += window
@@ -348,13 +337,11 @@ def linear_triangular(frequencies, spectrum, fcs, bandwidth=0.5): # pragma: no c
 
 
 @njit(cache=True)
-def log_triangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no cover 
+def log_triangular(frequencies, spectrum, fcs, bandwidth=0.05):  # pragma: no cover
     lower_limit = np.power(10, -bandwidth/2)
     upper_limit = np.power(10, +bandwidth/2)
 
-    nspectra, _ = spectrum.shape
-    nfcs = fcs.size
-    smoothed_spectrum = np.empty((nspectra, nfcs))
+    smoothed_spectrum = np.empty((spectrum.shape[0], fcs.size))
 
     for fc_index, fc in enumerate(fcs):
 
@@ -362,7 +349,7 @@ def log_triangular(frequencies, spectrum, fcs, bandwidth=0.05): # pragma: no cov
             smoothed_spectrum[:, fc_index] = 0
             continue
 
-        sumproduct = np.zeros(nspectra)
+        sumproduct = np.zeros(spectrum.shape[0])
         sumwindow = 0
 
         for f_index, f in enumerate(frequencies):

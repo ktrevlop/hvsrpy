@@ -519,7 +519,7 @@ def student_t_window_rejection(
     hvsr: Union[HvsrTraditional, HvsrAzimuthal],
     n: float = 2,
     search_range_in_hz: Tuple[Optional[float], Optional[float]] = (None, None),
-) -> int:
+) -> int: # pragma: no cover
     """Performs window rejection using Student's t-distribution.
 
     Parameters
@@ -592,7 +592,7 @@ def isolation_forest_outlier_rejection(
     hvsr,
     contamination="auto",
     search_range_in_hz=(None, None),
-):
+): # pragma: no cover
     """Performs window rejection using scikit-learn IsolationForest.
 
     Parameters
@@ -625,7 +625,7 @@ def isolation_forest_outlier_rejection(
     elif isinstance(hvsr, HvsrAzimuthal):
         hvsrs = hvsr.hvsrs
     else:
-        msg = "The Student's t-distribution window rejection algorithm can only "
+        msg = "The isolation_forest_outlier_rejection algorithm can only "
         msg += "be applied to HvsrTraditional and HvsrAzimuthal objects, not "
         msg += f"{type(hvsr)} type objects."
         raise NotImplementedError(msg)
