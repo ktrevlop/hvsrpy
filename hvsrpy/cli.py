@@ -47,7 +47,6 @@ def _process_hvsr(fname, preprocessing_settings, processing_settings, settings):
         hvsrpy.write_hvsr_object_to_file(hvsr,
                                   f"{pathlib.Path(fname).stem}.csv",
                                   distribution_mc=settings["distribution_mc"],
-                                  distribution_fn=settings["distribution_fn"],
                                   )
     end = time.perf_counter()
     print(f"{fname} completed in {end-start:.3f} seconds.")

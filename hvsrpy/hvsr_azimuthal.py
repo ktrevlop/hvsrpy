@@ -23,7 +23,6 @@ import numpy as np
 
 from .hvsr_curve import HvsrCurve
 from .hvsr_traditional import HvsrTraditional
-from .metadata import __version__
 from .constants import DISTRIBUTION_MAP
 from .statistics import _nanmean_weighted, _nanstd_weighted, _flatten_list, _nth_std_factory
 

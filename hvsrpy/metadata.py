@@ -1,6 +1,6 @@
 # This file is part of hvsrpy a Python package for horizontal-to-vertical
 # spectral ratio processing.
-# Copyright (C) 2019-2024 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
+# Copyright (C) 2019-2025 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -17,4 +17,5 @@
 
 """Metadata for hvsrpy."""
 
-__version__ = "2.0.0"
+# only used so far for hvsrweb update
+__version__ = "2.1.0"

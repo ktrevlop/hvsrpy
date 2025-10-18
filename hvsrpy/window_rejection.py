@@ -18,8 +18,16 @@
 """Collection of functions for window rejection."""
 
 import logging
+import warnings
+from typing import List, Optional, Tuple, Union
+
 
 import numpy as np
+from scipy import stats
+from sklearn.ensemble import IsolationForest
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
 
 from .hvsr_traditional import HvsrTraditional
 from .hvsr_azimuthal import HvsrAzimuthal
@@ -110,12 +118,15 @@ def sta_lta_window_rejection(records,
 
     if hvsr is not None:
         if isinstance(hvsr, HvsrTraditional):
-            hvsr.valid_window_boolean_mask = np.array(valid_window_boolean_mask)
+            hvsr.valid_window_boolean_mask = np.array(
+                valid_window_boolean_mask)
             hvsr.valid_peak_boolean_mask = np.array(valid_window_boolean_mask)
         elif isinstance(hvsr, HvsrAzimuthal):
             for _hvsr in hvsr.hvsrs:
-                _hvsr.valid_window_boolean_mask = np.array(valid_window_boolean_mask)
-                _hvsr.valid_peak_boolean_mask = np.array(valid_window_boolean_mask)
+                _hvsr.valid_window_boolean_mask = np.array(
+                    valid_window_boolean_mask)
+                _hvsr.valid_peak_boolean_mask = np.array(
+                    valid_window_boolean_mask)
         else:
             raise NotImplementedError
 
@@ -189,12 +200,15 @@ def maximum_value_window_rejection(records,
 
     if hvsr is not None:
         if isinstance(hvsr, HvsrTraditional):
-            hvsr.valid_window_boolean_mask = np.array(valid_window_boolean_mask)
+            hvsr.valid_window_boolean_mask = np.array(
+                valid_window_boolean_mask)
             hvsr.valid_peak_boolean_mask = np.array(valid_window_boolean_mask)
         elif isinstance(hvsr, HvsrAzimuthal):
             for _hvsr in hvsr.hvsrs:
-                _hvsr.valid_window_boolean_mask = np.array(valid_window_boolean_mask)
-                _hvsr.valid_peak_boolean_mask = np.array(valid_window_boolean_mask)
+                _hvsr.valid_window_boolean_mask = np.array(
+                    valid_window_boolean_mask)
+                _hvsr.valid_peak_boolean_mask = np.array(
+                    valid_window_boolean_mask)
         else:
             raise NotImplementedError
 
@@ -499,3 +513,149 @@ def manual_window_rejection(hvsr,
                 break
             else:
                 continue
+
+
+def student_t_window_rejection(
+    hvsr: Union[HvsrTraditional, HvsrAzimuthal],
+    n: float = 2,
+    search_range_in_hz: Tuple[Optional[float], Optional[float]] = (None, None),
+) -> int: # pragma: no cover
+    """Performs window rejection using Student's t-distribution.
+
+    Parameters
+    ----------
+    hvsr : HvsrTraditional or HvsrAzimuthal
+        HVSR object on which the window rejection algorithm will
+        be applied.
+    n : float, optional
+        Number of standard deviations from the mean to be removed,
+        default value is ``2``.
+    search_range_in_hz : tuple, optional
+        Frequency range to be searched for peaks.
+        Half open ranges can be specified with ``None``, default is
+        ``(None, None)`` indicating the full frequency range will be
+        searched.
+
+    Returns
+    -------
+    None
+        Updates HVSR object's internal state.
+
+    """
+    msg = "The student_t_window_rejection algorithm is in beta, "
+    msg += "please report any issues to the developers using "
+    msg += "https://github.com/jpvantassel/hvsrpy/issues"
+    warnings.warn(msg)
+
+    if isinstance(hvsr, HvsrTraditional):
+        hvsrs: List[HvsrTraditional] = [hvsr]
+    elif isinstance(hvsr, HvsrAzimuthal):
+        hvsrs = hvsr.hvsrs
+    else:
+        msg = "The Student's t-distribution window rejection algorithm can only "
+        msg += "be applied to HvsrTraditional and HvsrAzimuthal objects, not "
+        msg += f"{type(hvsr)} type objects."
+        raise NotImplementedError(msg)
+
+    hvsr.meta["performed window rejection"] = "Student's t-distribution"
+    hvsr.meta["window rejection algorithm arguments"] = dict(
+        n=n,
+        search_range_in_hz=search_range_in_hz,
+    )
+
+    mask: np.ndarray = np.ones_like(hvsr.frequency, dtype=bool)
+    if search_range_in_hz[0] is not None:
+        mask = np.logical_and(mask, hvsr.frequency >= search_range_in_hz[0])
+    if search_range_in_hz[1] is not None:
+        mask = np.logical_and(mask, hvsr.frequency <= search_range_in_hz[1])
+
+    for hvsr_obj in hvsrs:
+        ln_amps = np.log(hvsr_obj.amplitude)[:, mask]
+
+        # Fit the statistical distribution to the data.
+        params = np.array([stats.t.fit(x) for x in ln_amps.T])
+        means, stds = params[:, 1], params[:, 2]
+
+        limit_lower = means - n * stds
+        limit_upper = means + n * stds
+
+        count = 0
+        for idx, la in enumerate(ln_amps):
+            usable = (limit_lower <= la).all() & (la <= limit_upper).all()
+            hvsr_obj.valid_window_boolean_mask[idx] = usable
+            hvsr_obj.valid_peak_boolean_mask[idx] = usable
+            if usable:
+                count += 1
+
+
+def isolation_forest_outlier_rejection(
+    hvsr,
+    contamination="auto",
+    search_range_in_hz=(None, None),
+): # pragma: no cover
+    """Performs window rejection using scikit-learn IsolationForest.
+
+    Parameters
+    ----------
+    hvsr : HvsrTraditional or HvsrAzimuthal
+        HVSR object on which the window rejection algorithm will
+        be applied.
+    contamination : str or float, optional
+        The amount of contamination of the data set, i.e. the proportion
+        of outliers in the data set.
+    search_range_in_hz : tuple, optional
+        Frequency range to be searched for peaks.
+        Half open ranges can be specified with ``None``, default is
+        ``(None, None)`` indicating the full frequency range will be
+        searched.
+
+    Returns
+    -------
+    None
+        Updates HVSR object's internal state.
+
+    """
+    msg = "The isolation_forest_outlier_rejection algorithm is in beta, "
+    msg += "please report any issues to the developers using "
+    msg += "https://github.com/jpvantassel/hvsrpy/issues"
+    warnings.warn(msg)
+
+    if isinstance(hvsr, HvsrTraditional):
+        hvsrs = [hvsr]
+    elif isinstance(hvsr, HvsrAzimuthal):
+        hvsrs = hvsr.hvsrs
+    else:
+        msg = "The isolation_forest_outlier_rejection algorithm can only "
+        msg += "be applied to HvsrTraditional and HvsrAzimuthal objects, not "
+        msg += f"{type(hvsr)} type objects."
+        raise NotImplementedError(msg)
+
+    hvsr.meta["performed window rejection"] = "Student's t-distribution"
+    hvsr.meta["window rejection algorithm arguments"] = dict(
+        contamination=contamination,
+        search_range_in_hz=search_range_in_hz,
+    )
+
+    freq_mask = np.ones_like(hvsr.frequency, dtype=bool)
+    if search_range_in_hz[0] is not None:
+        freq_mask = np.logical_and(
+            freq_mask, hvsr.frequency >= search_range_in_hz[0])
+    if search_range_in_hz[1] is not None:
+        freq_mask = np.logical_and(
+            freq_mask, hvsr.frequency <= search_range_in_hz[1])
+
+    pipeline = Pipeline(
+        [
+            ("scaler", StandardScaler()),
+            ("svm", IsolationForest(contamination=contamination, random_state=42)),
+        ]
+    )
+
+    for hvsr in hvsrs:
+        ln_amps = np.log(hvsr.amplitude)[:, freq_mask]
+
+        labels = pipeline.fit_predict(ln_amps)
+
+        mask = labels == -1
+        hvsr.valid_window_boolean_mask[mask] = False
+        hvsr.valid_peak_boolean_mask[mask] = False

@@ -25,8 +25,9 @@ logger = logging.getLogger(__name__)
 
 __all__ = ["HvsrDiffuseField"]
 
+
 class HvsrDiffuseField(HvsrCurve):
-    
+
     def mean_curve(self, distribution=None):
         """Mean HVSR curve according to diffuse field theory.
 

@@ -36,7 +36,7 @@ def hvsr_preprocess(records, settings):
 
         # check if all records have same dt.
         if np.abs(srecord3c.vt.dt_in_seconds - ex_dt) > 1E-5 and not settings.ignore_dissimilar_time_step_warning:  # pragma: no cover
-            msg = f"The dt_in_seconds of all records are not equal, "
+            msg = "The dt_in_seconds of all records are not equal, "
             msg += f"dt_in_seconds of record {idx} is "
             msg += f"{srecord3c.vt.dt_in_seconds} which does not match "
             msg += f"dt_in_seconds of record 0 of {ex_dt}."
@@ -49,7 +49,8 @@ def hvsr_preprocess(records, settings):
         # time-domain filter raw signal.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            srecord3c.butterworth_filter(settings.filter_corner_frequencies_in_hz)
+            srecord3c.butterworth_filter(
+                settings.filter_corner_frequencies_in_hz)
 
         # divide raw signal into time windows.
         if settings.window_length_in_seconds is not None:
@@ -66,6 +67,7 @@ def hvsr_preprocess(records, settings):
 
     return preprocessed_records
 
+
 def psd_preprocess(records, settings):
 
     prepare_fft_settings(records, settings)
@@ -80,7 +82,7 @@ def psd_preprocess(records, settings):
 
         # check if all records have same dt.
         if np.abs(srecord3c.vt.dt_in_seconds - ex_dt) > 1E-5 and not settings.ignore_dissimilar_time_step_warning:  # pragma: no cover
-            msg = f"The dt_in_seconds of all records are not equal, "
+            msg = "The dt_in_seconds of all records are not equal, "
             msg += f"dt_in_seconds of record {idx} is "
             msg += f"{srecord3c.vt.dt_in_seconds} which does not match "
             msg += f"dt_in_seconds of record 0 of {ex_dt}."
@@ -93,7 +95,8 @@ def psd_preprocess(records, settings):
         # time-domain filter raw signal.
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            srecord3c.butterworth_filter(settings.filter_corner_frequencies_in_hz)
+            srecord3c.butterworth_filter(
+                settings.filter_corner_frequencies_in_hz)
 
         # window full signal
         if settings.instrument_transfer_function is not None or settings.differentiate:
@@ -111,7 +114,8 @@ def psd_preprocess(records, settings):
             # repeat filter after removing instrument response.
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
-                srecord3c.butterworth_filter(settings.filter_corner_frequencies_in_hz)
+                srecord3c.butterworth_filter(
+                    settings.filter_corner_frequencies_in_hz)
 
         # differentiate raw signal.
         if settings.differentiate:
@@ -134,6 +138,7 @@ def psd_preprocess(records, settings):
         preprocessed_records.extend(windows)
 
     return preprocessed_records
+
 
 PREPROCESSING_METHODS = {
     "hvsr": hvsr_preprocess,
@@ -160,4 +165,3 @@ def preprocess(records, settings):
 
     """
     return PREPROCESSING_METHODS[settings.preprocessing_method](records, settings)
-

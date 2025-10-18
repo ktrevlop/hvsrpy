@@ -38,9 +38,8 @@ class TestObjectIO(TestCase):
 
     def _test_save_and_load_hvsr_boiler_plate(self, hvsr, fname, distribution_mc, distribution_fn):
         hvsrpy.write_hvsr_object_to_file(hvsr,
-                                  fname,
-                                  distribution_mc,
-                                  distribution_fn)
+                                         fname,
+                                         distribution_mc)
         self.assertTrue(os.path.exists(fname))
         nhvsr = hvsrpy.read_hvsr_object_from_file(fname)
         os.remove(fname)

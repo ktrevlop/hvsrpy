@@ -2,11 +2,11 @@
 
 > Joseph P. Vantassel, [jpvantassel.com](https://www.jpvantassel.com/)
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.12735911.svg)](https://doi.org/10.5281/zenodo.12735911)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3666956.svg)](https://doi.org/10.5281/zenodo.3666956)
 [![PyPI - License](https://img.shields.io/pypi/l/hvsrpy)](https://github.com/jpvantassel/hvsrpy/blob/main/LICENSE.txt)
 [![CircleCI](https://circleci.com/gh/jpvantassel/hvsrpy.svg?style=svg)](https://circleci.com/gh/jpvantassel/hvsrpy)
 [![Documentation Status](https://readthedocs.org/projects/hvsrpy/badge/?version=latest)](https://hvsrpy.readthedocs.io/en/latest/?badge=latest)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/528737ade629492e8652be369528c756)](https://www.codacy.com/gh/jpvantassel/hvsrpy/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jpvantassel/hvsrpy&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/528737ade629492e8652be369528c756)](https://app.codacy.com/gh/jpvantassel/hvsrpy/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![codecov](https://codecov.io/gh/jpvantassel/hvsrpy/branch/main/graph/badge.svg?token=MJ3WDNRIM0)](https://codecov.io/gh/jpvantassel/hvsrpy)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hvsrpy)
 
@@ -29,19 +29,28 @@ with contributions from Dana M. Brannon under the supervision of Professor
 Brady R. Cox at The University of Texas at Austin. _hvsrpy_ continues to be
 developed and maintained by [Joseph P. Vantassel and his research group at Virginia Tech](https://geoimaging-research.org/).
 
+## Citation
+
 If you use `hvsrpy` in your research or consulting, we ask you please cite the
 following:
+
+> Vantassel, J.P. (2025). "_hvsrpy_: An Open‐Source Python Package for Microtremor
+> and Earthquake Horizontal‐to‐Vertical Spectral Ratio Processing". Seismological
+> Research Letters. 96 (4): 2671–2682,
+> [https://doi.org/10.1785/0220240395](https://doi.org/10.1785/0220240395)
 
 > Joseph Vantassel. (2020). jpvantassel/hvsrpy: latest (Concept). Zenodo.
 > [http://doi.org/10.5281/zenodo.3666956](http://doi.org/10.5281/zenodo.3666956)
 
-_Note: For software, version specific citations should be preferred to
-general concept citations, such as that listed above. To generate a version
-specific citation for `hvsrpy`, please use the citation tool on the `hvsrpy`
+_For software, version specific citations should be preferred to
+general concept citations. To generate a version specific citation
+for `hvsrpy`, please use the citation tool on the `hvsrpy`
 [archive](http://doi.org/10.5281/zenodo.3666956)._
 
-`hvsrpy` implements the work of many others. Therefore we strongly encourage
-users to cite the original work alongside `hvsrpy`. Below we list key features
+## References to Implemented Work
+
+`hvsrpy` implements the work of many others. We strongly encourage
+users to cite original work alongside `hvsrpy`. Below we list key features
 and their associated citation.
 
 Lognormal statistics and fully-automated frequency-domain window-rejection algorithm.
@@ -103,7 +112,7 @@ display of our gratitude, we thank them individually
 open-source software, including:
 
 -   Support of a broad range of microtremor and earthquake data formats
-including: miniSEED, SAF, MiniShark, SAC, GCF, and PEER.
+including: MiniSEED, SAF, MiniShark, SAC, GCF, and PEER.
 -   Multiple methods to combine the horizontal components including: arithmetic_mean, squared-average, quadratic-mean, geometric-mean, total-horizontal-energy, vector-summation, maximum-horizontal-value,
 rotD50, or single-azimuth.
 -   Ability to use a lognormal distribution for the site resonant
@@ -195,7 +204,7 @@ last few lines of the text displayed in the console.
 3.  Continue to explore the other example notebooks provided. Note that each
   example notebook seeks to highlight one or two key features of `hvsrpy` and
   it may be helpful to combine multiple components together to build
-  a custom workflow, this is highly encouraged.
+  a custom workflow.
 
 4.  Enjoy!
 

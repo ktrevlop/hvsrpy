@@ -37,7 +37,6 @@ class TestDataWrangler(TestCase):
     def test_read_single_on_mseed_combined(self):
         fname = self.input_path / "mseed_combined/ut.stn11.a2_c50.mseed"
         data = hvsrpy.data_wrangler.read_single(fname)
-        # data.save(self.input_path / "srecord3c/ut.stn11.a2_c50.json")
         self.assertTrue(isinstance(data, hvsrpy.SeismicRecording3C))
 
     def test_read_single_on_mseed_individual(self):
@@ -123,6 +122,29 @@ class TestDataWrangler(TestCase):
         self.assertAlmostEqual(data[0].degrees_from_north, 10)
         self.assertAlmostEqual(data[1].degrees_from_north, 20)
 
+    def test_read_where_traces_12z_without_degrees_from_north(self):
+        fnames = self.input_path / "mseed_combined/12z.mseed"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self.assertRaises(ValueError, hvsrpy.read, fnames, obspy_read_kwargs={})
+
+    def test_read_where_traces_12z_with_degrees_from_north(self):
+        fnames = self.input_path / "mseed_combined/12z.mseed"
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            data = hvsrpy.read(fnames, obspy_read_kwargs={}, degrees_from_north=15)
+        self.assertTrue(len(data) == 1)
+        self.assertTrue(isinstance(data[0], hvsrpy.SeismicRecording3C))
+        self.assertAlmostEqual(data[0].degrees_from_north, 15)
+
+    def test_read_mseed_different_start_but_overlapped(self):
+        fname = self.input_path / "mseed_combined/diff_start_overlap.mseed"
+        data = hvsrpy.data_wrangler.read_single(fname)
+        self.assertTrue(isinstance(data, hvsrpy.SeismicRecording3C))
+
+    def test_read_mseed_different_start_no_overlapped(self):
+        fname = self.input_path / "mseed_combined/diff_start_no_overlap.mseed"
+        self.assertRaises(ValueError, hvsrpy.data_wrangler.read_single, fname)
 
 if __name__ == "__main__":
     unittest.main()

@@ -7,7 +7,7 @@ termcolor
 matplotlib
 click>8.0.0
 numba
-PyQt5
+scikit-learn
 tox
 jupyterlab
 coverage

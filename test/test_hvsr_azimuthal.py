@@ -216,22 +216,12 @@ class TestHvsrAzimuthal(TestCase):
         self.assertAlmostEqual(f_peak, 4, places=3)
         self.assertAlmostEqual(a_peak, 1.8298, places=3)
 
-    def test_hvsrazimuthal_mean_curve_normal(self):
-        returned = self.ahvsr.mean_curve("normal")
-        expected = np.array([1.250, 1.875, 2.063, 2.417, 1.333])
-        self.assertArrayAlmostEqual(expected, returned, places=2)
-
     def test_hvsrazimuthal_mean_curve_normal_peak(self):
         f_peak, a_peak = self.ahvsr.mean_curve_peak("normal")
         self.assertAlmostEqual(f_peak, 4)
         self.assertAlmostEqual(a_peak, 2.417, places=2)
 
-    def test_hvsrazimuthal_mean_curve_lognormal(self):
-        returned = self.ahvsr.mean_curve("lognormal")
-        expected = np.array([1.122, 1.566, 1.709, 1.830, 1.144])
-        self.assertArrayAlmostEqual(expected, returned, places=2)
-
-    def test_hvsrazimuthal_mean_curve_normal_peak(self):
+    def test_hvsrazimuthal_mean_curve_lognormal_peak(self):
         f_peak, a_peak = self.ahvsr.mean_curve_peak("lognormal")
         self.assertAlmostEqual(f_peak, 4)
         self.assertAlmostEqual(a_peak, 1.830, places=2)

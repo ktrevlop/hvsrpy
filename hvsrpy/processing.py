@@ -484,8 +484,8 @@ def rpsd(records, settings):
 
     """
     prepare_fft_settings(records, settings)
-    fft_frq = np.fft.rfftfreq(
-        settings.fft_settings["n"], records[0].vt.dt_in_seconds)
+    fft_frq = np.fft.rfftfreq(settings.fft_settings["n"],
+                              records[0].vt.dt_in_seconds)
     psd_ns = _rpds_single_component(
         [record.ns for record in records], settings)
     psd_ew = _rpds_single_component(

@@ -1,6 +1,6 @@
 # This file is part of hvsrpy, a Python package for horizontal-to-vertical
 # spectral ratio processing.
-# Copyright (C) 2019-2023 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
+# Copyright (C) 2019-2025 Joseph P. Vantassel (joseph.p.vantassel@gmail.com)
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,10 @@ import numpy as np
 from .hvsr_diffuse_field import HvsrDiffuseField
 from .hvsr_traditional import HvsrTraditional
 from .hvsr_azimuthal import HvsrAzimuthal
-from .settings import *
+from .settings import HvsrPreProcessingSettings, PsdPreProcessingSettings, PsdProcessingSettings
+from .settings import HvsrTraditionalProcessingSettings, HvsrTraditionalSingleAzimuthProcessingSettings
+from .settings import HvsrTraditionalRotDppProcessingSettings, HvsrAzimuthalProcessingSettings
+from .settings import HvsrDiffuseFieldProcessingSettings
 from .regex import azimuth_exec
 
 __all__ = [
@@ -35,10 +38,11 @@ __all__ = [
     "read_settings_object_from_file",
 ]
 
+
 def write_hvsr_object_to_file(hvsr,
-                       fname,
-                       distribution_mc="lognormal",
-                       distribution_fn="lognormal"):
+                              fname,
+                              distribution_mc="lognormal"
+                              ):
     """Write HVSR object to text-based file.
 
     Parameters
@@ -50,9 +54,6 @@ def write_hvsr_object_to_file(hvsr,
         to be stored. May be a relative or the full path.
     distribution_mc : {"normal", "lognormal"}, optional
         Assumed distribution of mean curve, default is "lognormal".
-        Ignored for ``HvsrDiffuseField`` objects.
-    distribution_fn : {"normal", "lognormal"}, optional
-        Assumed distribution of ``fn``, the default is ``"lognormal"``.
         Ignored for ``HvsrDiffuseField`` objects.
 
     Returns
