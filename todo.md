@@ -12,4 +12,3 @@
 - Anthropogenic peak pre-processing.
 - Include FAS output in HVSR.
 - HVSR forward modeling.
-- Remove PyQt5 as dependency.
