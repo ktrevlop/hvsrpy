@@ -22,12 +22,14 @@ import logging
 import numpy as np
 from scipy.signal import find_peaks
 
+from .frequency_amplitude_curve import FrequencyAmplitudeCurve
+
 logger = logging.getLogger(__name__)
 
 __all__ = ["HvsrCurve"]
 
 
-class HvsrCurve():
+class HvsrCurve(FrequencyAmplitudeCurve):
     """Class for creating and manipulating ``HvsrCurve`` objects.
 
     Attributes
@@ -42,54 +44,6 @@ class HvsrCurve():
         Amplitude of highest amplitude peak of HVSR curve.
 
     """
-    @staticmethod
-    def _check_input(value, name):
-        """Check input values.
-
-        .. warning:: 
-            Private methods are subject to change without warning.
-
-        Specifically:
-            1. ``value`` must be castable to ``ndarray`` of doubles.
-            2. ``value`` must be real; no ``np.nan``.
-            3. ``value`` must be >= 0.
-
-        Parameters
-        ----------
-        value : iterable
-            Value to be checked.
-        name : str
-            Name of ``value`` to be checked, used for meaningful error
-            messages.
-
-        Returns
-        -------
-        ndarray
-            ``values`` as ``ndarray`` of doubles.
-
-        Raises
-        ------
-        TypeError
-            If ``value`` is not castable to an ``ndarray`` of doubles.
-        ValueError
-            If ``value`` contains nan or a value less than or equal to zero.
-
-        """
-        try:
-            value = np.array(value, dtype=np.double)
-        except ValueError:
-            msg = f"{name} must be castable to array of doubles, "
-            msg += f"not {type(value)}."
-            raise TypeError(msg)
-
-        if np.isnan(value).any():
-            raise ValueError(f"{name} may not contain nan.")
-
-        if (value < 0).any():
-            raise ValueError(f"{name} must be >= 0.")
-
-        return value
-
     @staticmethod
     def _find_peak_unbounded(frequency, amplitude, find_peaks_kwargs=None):
         """Finds frequency and amplitude associated with highest peak.
@@ -168,13 +122,7 @@ class HvsrCurve():
             Initialized with ``amplitude`` and ``frequency``.
 
         """
-        self.frequency = self._check_input(frequency, "frequency")
-        self.amplitude = self._check_input(amplitude, "amplitude")
-
-        if len(self.frequency) != len(self.amplitude):
-            msg = f"Length of amplitude {len(self.amplitude)} and length"
-            msg += f"of frequency {len(self.amplitude)} must be agree."
-            raise ValueError(msg)
+        super().__init__(frequency, amplitude)
 
         self.meta = dict(meta) if isinstance(meta, dict) else dict()
 
@@ -227,19 +175,13 @@ class HvsrCurve():
             frq, amp = np.nan, np.nan
 
         self.peak_frequency, self.peak_amplitude = frq, amp
-
+    
     def is_similar(self, other, atol=1E-9, rtol=0.):
         """Check if ``other`` is similar to ``self``."""
         if not isinstance(other, HvsrCurve):
             return False
+        return super().is_similar(other, atol=atol, rtol=rtol)
 
-        if len(self.frequency) != len(other.frequency):
-            return False
-
-        if not np.allclose(self.frequency, other.frequency, atol=atol, rtol=rtol):
-            return False
-
-        return True
 
     def __eq__(self, other: object) -> bool:
         if not self.is_similar(other):

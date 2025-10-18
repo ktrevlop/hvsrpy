@@ -19,14 +19,14 @@
 
 import logging
 
-import numpy as np
+from .frequency_amplitude_curve import FrequencyAmplitudeCurve
 
 logger = logging.getLogger(__name__)
 
 __all__ = ["Psd"]
 
 
-class Psd():
+class Psd(FrequencyAmplitudeCurve):
     """Class for creating and manipulating ``Psd`` objects.
 
     Attributes
@@ -37,53 +37,6 @@ class Psd():
         Vector of PSD amplitude values, one value per ``frequency``.
 
     """
-    @staticmethod
-    def _check_input(value, name):
-        """Check input values.
-
-        .. warning:: 
-            Private methods are subject to change without warning.
-
-        Specifically:
-            1. ``value`` must be castable to ``ndarray`` of doubles.
-            2. ``value`` must be real; no ``np.nan``.
-            3. ``value`` must be >= 0.
-
-        Parameters
-        ----------
-        value : iterable
-            Value to be checked.
-        name : str
-            Name of ``value`` to be checked, used for meaningful error
-            messages.
-
-        Returns
-        -------
-        ndarray
-            ``values`` as ``ndarray`` of doubles.
-
-        Raises
-        ------
-        TypeError
-            If ``value`` is not castable to an ``ndarray`` of doubles.
-        ValueError
-            If ``value`` contains nan or a value less than or equal to zero.
-
-        """
-        try:
-            value = np.array(value, dtype=np.double)
-        except ValueError:
-            msg = f"{name} must be castable to array of doubles, "
-            msg += f"not {type(value)}."
-            raise TypeError(msg)
-
-        if np.isnan(value).any():
-            raise ValueError(f"{name} may not contain nan.")
-
-        if (value < 0).any():
-            raise ValueError(f"{name} must be >= 0.")
-
-        return value
 
     def __init__(self, frequency, amplitude, meta=None):
         """Create ``Psd`` from iterables of frequency and amplitude.
@@ -103,25 +56,12 @@ class Psd():
             Initialized with ``amplitude`` and ``frequency``.
 
         """
-        self.frequency = self._check_input(frequency, "frequency")
-        self.amplitude = self._check_input(amplitude, "amplitude")
+        super().__init__(frequency, amplitude)
 
-        if len(self.frequency) != len(self.amplitude):
-            msg = f"Length of amplitude {len(self.amplitude)} and length"
-            msg += f"of frequency {len(self.amplitude)} must be agree."
-            raise ValueError(msg)
-
-        self.meta = dict(meta) if isinstance(meta, dict) else dict()
+        self.meta = dict(meta) if isinstance(meta, dict) else {}
 
     def is_similar(self, other, atol=1E-9, rtol=0.):
         """Check if ``other`` is similar to ``self``."""
         if not isinstance(other, Psd):
             return False
-
-        if len(self.frequency) != len(other.frequency):
-            return False
-
-        if not np.allclose(self.frequency, other.frequency, atol=atol, rtol=rtol):
-            return False
-
-        return True
+        return super().is_similar(other, atol=atol, rtol=rtol)
