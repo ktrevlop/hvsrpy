@@ -73,10 +73,10 @@ class FrequencyAmplitudeCurve(ABC):
         """
         try:
             value = np.array(value, dtype=np.double)
-        except ValueError:
+        except ValueError as e:
             msg = f"{name} must be castable to array of doubles, "
             msg += f"not {type(value)}."
-            raise TypeError(msg)
+            raise TypeError(msg) from e
 
         if np.isnan(value).any():
             raise ValueError(f"{name} may not contain nan.")

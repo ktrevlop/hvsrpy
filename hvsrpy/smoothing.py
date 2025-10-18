@@ -144,7 +144,7 @@ def parzen(frequencies, spectrum, fcs, bandwidth=0.5):  # pragma: no cover
             if (f < 1E-6) or (f_minus_fc > upper_limit) or (f_minus_fc < lower_limit):
                 continue
 
-            if np.abs(f - fc) < 1E-6:
+            if np.abs(f_minus_fc) < 1E-6:
                 window = 1.
             else:
                 window = a*f_minus_fc / bandwidth

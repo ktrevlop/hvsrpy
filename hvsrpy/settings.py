@@ -58,10 +58,8 @@ class Settings(ABC):
         attr_dict = {}
 
         def to_serializable(entry):
-            try:
+            if isinstance(entry, np.ndarray):
                 entry = entry.tolist()
-            except Exception:
-                pass
             return entry
 
         for name in self.attrs:

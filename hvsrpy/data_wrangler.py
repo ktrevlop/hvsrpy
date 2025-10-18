@@ -55,17 +55,20 @@ def _arrange_traces(traces, components="NEZ"):
             raise ValueError(msg)
     return ns, ew, vt
 
+
 def _orient_traces(traces, degrees_from_north):
     # assume NEZ format
     try:
         ns, ew, vt = _arrange_traces(traces, components="NEZ")
-        degrees_from_north = 0 if degrees_from_north is None else float(degrees_from_north)
+        degrees_from_north = 0 if degrees_from_north is None else float(
+            degrees_from_north)
 
     # not NEZ; try XYZ next
     except ValueError:
         try:
             ns, ew, vt = _arrange_traces(traces, components="XYZ")
-            degrees_from_north = 0 if degrees_from_north is None else float(degrees_from_north)
+            degrees_from_north = 0 if degrees_from_north is None else float(
+                degrees_from_north)
 
         # not NEZ or XYZ; try 123 next
         except ValueError:
@@ -89,21 +92,23 @@ def _orient_traces(traces, degrees_from_north):
 
     return ns, ew, vt, degrees_from_north
 
+
 def _trim_traces(traces):
     # find common start and end times
-    start_time = max([trace.stats.starttime for trace in traces])
-    end_time = min([trace.stats.endtime for trace in traces])
+    start_time = max(trace.stats.starttime for trace in traces)
+    end_time = min(trace.stats.endtime for trace in traces)
 
     duration = end_time - start_time
     if duration < 0.1:
         raise ValueError("Ambient noise time series do not overlap.")
 
-    for trace in traces:            
+    for trace in traces:
         trace.trim(starttime=start_time, endtime=end_time)
 
     traces = [TimeSeries.from_trace(trace) for trace in traces]
 
     return traces
+
 
 def _check_npts(npts_header, npts_found):
     if npts_header != npts_found:  # pragma: no cover
@@ -394,18 +399,18 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
 
     trace_list = []
     for fname in fnames:
-        for byteorder in ["little", "big"]:
+        try:
+            obspy_read_kwargs["byteorder"] = "little"
+            stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
+        except Exception:
             if isinstance(fname, io.BytesIO):
                 fname.seek(0, 0)
-            obspy_read_kwargs["byteorder"] = byteorder
-            try:
-                stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
-            except Exception as e:
-                pass
-            else:
-                break
-        else:
-            raise e
+            obspy_read_kwargs["byteorder"] = "big"
+            stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
+
+        if len(stream) != 1:  # pragma: no cover
+            msg = f"Provided {len(stream)} traces in {fname}, but must only provide 1."
+            raise ValueError(msg)
 
         trace = stream[0]
         trace_list.append(trace)
@@ -507,7 +512,7 @@ def _read_peer(fnames, obspy_read_kwargs=None, degrees_from_north=None):
         Initialized 3-component seismic recording object.
 
     """
-    if not isinstance(fnames, (list, tuple)): # pragma: no cover
+    if not isinstance(fnames, (list, tuple)):  # pragma: no cover
         msg = "Must provide 3 peer files (one per trace) as list or tuple, "
         msg += f"not {type(fnames)}."
         raise ValueError(msg)
@@ -680,7 +685,7 @@ def read_single(fnames, obspy_read_kwargs=None, degrees_from_north=None, verbose
         msg = "File format not recognized. Only the following are supported: "
         msg += f"{list(READ_FUNCTION_DICT.keys())}. "
         msg += "If you believe you are using one of these formats set "
-        msg += "verbose=True to assist in the debugging process."    
+        msg += "verbose=True to assist in the debugging process."
         raise ValueError(msg)
     return srecording_3c
 
