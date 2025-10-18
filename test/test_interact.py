@@ -19,8 +19,6 @@
 
 import logging
 
-import numpy as np
-
 import hvsrpy.interact as interact
 from testing_tools import unittest, TestCase
 

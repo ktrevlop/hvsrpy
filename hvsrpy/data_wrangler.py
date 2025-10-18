@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 
 def _arrange_traces(traces, components="NEZ"):
     """Sort ``list`` of 3 ``Trace`` objects according to direction."""
+    ns, ew, vt = None, None, None
     found_ew, found_ns, found_vt = False, False, False
     for trace in traces:
         if trace.meta.channel.endswith(components[0]) and not found_ns:

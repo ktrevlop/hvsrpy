@@ -74,7 +74,8 @@ class HvsrTraditional():
 
         """
         self.frequency = HvsrCurve._check_input(frequency, "frequency")
-        self.amplitude = np.atleast_2d(HvsrCurve._check_input(amplitude, "amplitude"))
+        self.amplitude = np.atleast_2d(
+            HvsrCurve._check_input(amplitude, "amplitude"))
 
         if len(self.frequency) != self.amplitude.shape[1]:
             msg = f"Shape of amplitude={self.amplitude.shape} and "
@@ -92,7 +93,7 @@ class HvsrTraditional():
         self._find_peaks_kwargs = "default_overwritten_below"
         self.update_peaks_bounded()
 
-    @ classmethod
+    @classmethod
     def from_hvsr_curves(cls, hvsr_curves, meta=None):
         """Instantiate `HvsrTraditional` from iterable of ``HvsrCurve``.
 
@@ -122,12 +123,12 @@ class HvsrTraditional():
 
         return cls(example.frequency, amplitude, meta=meta)
 
-    @ property
+    @property
     def peak_frequencies(self):
         """Valid peak frequency vector, one per window or earthquake recording."""
         return self._main_peak_frq[self.valid_peak_boolean_mask]
 
-    @ property
+    @property
     def peak_amplitudes(self):
         """Valid peak amplitude vector, one per window or earthquake recording."""
         return self._main_peak_amp[self.valid_peak_boolean_mask]
@@ -157,9 +158,11 @@ class HvsrTraditional():
             return
         else:
             self._search_range_in_hz = tuple(search_range_in_hz)
-            self._find_peaks_kwargs = {} if find_peaks_kwargs is None else dict(find_peaks_kwargs)
+            self._find_peaks_kwargs = {} if find_peaks_kwargs is None else dict(
+                find_peaks_kwargs)
             self.meta["search_range_in_hz"] = self._search_range_in_hz
-            self.meta["find_peaks_kwargs"] = None if find_peaks_kwargs is None else dict(find_peaks_kwargs) 
+            self.meta["find_peaks_kwargs"] = None if find_peaks_kwargs is None else dict(
+                find_peaks_kwargs)
 
         all_curves_flat = True
         for _idx, _amplitude in enumerate(self.amplitude):

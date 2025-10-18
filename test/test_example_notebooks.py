@@ -43,7 +43,7 @@ class TestExampleNotebooks(TestCase):
             ep = ExecutePreprocessor(timeout=600, kernel_name='python3')
             try:
                 ep.preprocess(nb)
-            except:
+            except Exception:
                 self.assertTrue(False)
         self.assertTrue(True)
 

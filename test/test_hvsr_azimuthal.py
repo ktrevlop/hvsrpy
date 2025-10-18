@@ -221,7 +221,7 @@ class TestHvsrAzimuthal(TestCase):
         self.assertAlmostEqual(f_peak, 4)
         self.assertAlmostEqual(a_peak, 2.417, places=2)
 
-    def test_hvsrazimuthal_mean_curve_normal_peak(self):
+    def test_hvsrazimuthal_mean_curve_lognormal_peak(self):
         f_peak, a_peak = self.ahvsr.mean_curve_peak("lognormal")
         self.assertAlmostEqual(f_peak, 4)
         self.assertAlmostEqual(a_peak, 1.830, places=2)

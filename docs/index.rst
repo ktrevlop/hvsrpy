@@ -19,17 +19,19 @@ Citation
 If you use `hvsrpy` in your research or consulting, we ask you please
 cite the following:
 
-    Joseph Vantassel. (2020). jpvantassel/hvsrpy: latest (Concept).
+    Vantassel, J.P. (2025). "`hvsrpy`: An Open-Source Python Package
+    for Microtremor and Earthquake Horizontal-to-Vertical Spectral
+    Ratio Processing". Seismological Research Letters. 96 (4):
+    2671-2682, https://doi.org/10.1785/0220240395
+
+    Vantassel, J.P. (2020). jpvantassel/hvsrpy: latest (Concept).
     Zenodo. http://doi.org/10.5281/zenodo.3666956
 
-.. TODO(JPV): Add citatation to hvsrpy paper when published.
-
 .. note:: 
-   For software, version specific citations should be preferred to
-   general concept citations, such as that listed above. To generate a
-   version specific citation for `hvsrpy`, please use the citation tool
-   on the `hvsrpy` `archive <http://doi.org/10.5281/zenodo.3666956>`_.
-
+    For software, version specific citations should be preferred to
+    concept citations. To generate a version
+    specific citation for `hvsrpy`, use the citation tool on the `hvsrpy`
+    `archive <http://doi.org/10.5281/zenodo.3666956>`_.
 
 .. hvsrpy would not exist without the help of many others. As a small
 .. display of gratitude, we thank them individually here.
@@ -63,10 +65,12 @@ cite the following:
 .. Fundamental Site Frequency, f0,XY 	0.58 	0.15
 .. Fundamental Site Period, T0,XY 	1.74 	0.15
 
-References
-----------
+References to Implemented Work
+------------------------------
 
-The references below provide background on the calculations performed
+`hvsrpy` implements the work of many others. We strongly encourage
+users to cite original work alongside `hvsrpy`. The references below
+provide background on the calculations performed
 by `hvsrpy`. We ask you please cite them appropriately.
 
     Cox, B. R., Cheng, T., Vantassel, J. P., and Manuel, L. (2020).

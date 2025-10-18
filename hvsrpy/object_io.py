@@ -25,7 +25,10 @@ import numpy as np
 from .hvsr_diffuse_field import HvsrDiffuseField
 from .hvsr_traditional import HvsrTraditional
 from .hvsr_azimuthal import HvsrAzimuthal
-from .settings import *
+from .settings import HvsrPreProcessingSettings, PsdPreProcessingSettings, PsdProcessingSettings
+from .settings import HvsrTraditionalProcessingSettings, HvsrTraditionalSingleAzimuthProcessingSettings
+from .settings import HvsrTraditionalRotDppProcessingSettings, HvsrAzimuthalProcessingSettings
+from .settings import HvsrDiffuseFieldProcessingSettings
 from .regex import azimuth_exec
 
 __all__ = [
