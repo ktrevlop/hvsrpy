@@ -242,7 +242,7 @@ def _read_saf(fnames, obspy_read_kwargs=None, degrees_from_north=None):
     if degrees_from_north is None:
         try:
             north_rot = float(saf_north_rot_exec.search(text).groups()[0])
-        except:  # pragma: no cover
+        except Exception:  # pragma: no cover
             msg = f"The provided saf file {fname} does not include the "
             msg += "NORTH_ROT keyword, assuming equal to zero."
             warnings.warn(msg, UserWarning)
@@ -400,9 +400,6 @@ def _read_sac(fnames, obspy_read_kwargs=None, degrees_from_north=None):
             try:
                 stream = _quiet_obspy_read(fname, **obspy_read_kwargs)
             except Exception as e:
-                # msg = f"Tried reading as sac {byteorder} endian, "
-                # msg += f"got exception |  {e}"
-                # logger.info(msg)
                 pass
             else:
                 break

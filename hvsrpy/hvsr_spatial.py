@@ -20,13 +20,13 @@
 import logging
 
 import numpy as np
-from numpy.random import default_rng, PCG64, MT19937, BitGenerator
+from numpy.random import default_rng
 from scipy.spatial import Voronoi
 from shapely.geometry import MultiPoint, Point, Polygon
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["montecarlo_fn", "HvsrVault"]
+__all__ = ["montecarlo_fn", "HvsrSpatial"]
 
 
 def _statistics(values, weights):

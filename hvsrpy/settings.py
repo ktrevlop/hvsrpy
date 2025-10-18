@@ -60,7 +60,7 @@ class Settings(ABC):
         def to_serializable(entry):
             try:
                 entry = entry.tolist()
-            except:
+            except Exception:
                 pass
             return entry
 

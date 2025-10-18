@@ -201,9 +201,9 @@ class SeismicRecording3C():
             Filters ``amplitude`` attribute in-place.
 
         """
-        self.meta["butterworth_filter"] = fcs_in_hz
+        self.meta["filter_corner_frequencies_in_hz"] = fcs_in_hz
         for component in ["ns", "ew", "vt"]:
-            getattr(self, component).butterworth_filter(fcs_in_hz=fcs_in_hz,
+            getattr(self, component).butterworth_filter(fcs_in_hz,
                                                         order=order)
 
     def orient_sensor_to(self, degrees_from_north):

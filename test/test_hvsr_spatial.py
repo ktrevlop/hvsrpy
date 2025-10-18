@@ -20,7 +20,6 @@
 import logging
 
 import numpy as np
-from numpy.random import PCG64
 
 import hvsrpy.hvsr_spatial as spatial
 from testing_tools import unittest, TestCase
